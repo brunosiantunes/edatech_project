@@ -37,10 +37,31 @@ else:
     print(f"\nTotal de vendas de Eletrônicos: {len(vendas_eletronicos)}")
 
 # Identificando e exibindo o produto mais vendido em quantidade
+    grupo_produto = df.groupby('produto')['quantidade'].sum()
     produto_top = df.groupby('produto')['quantidade'].sum().idxmax()
-    print(f"Produto mais vendido da loja: {produto_top}")
+    qtd_top = grupo_produto.max()
+    print(f"Produto mais vendido da loja: {produto_top} ({qtd_top} unidades)")
 
 # Descobrindo e exibindo a região com maior valor de compras.
+    grupo_regiao = df.groupby('regiao')['receita_total'].sum()
     regiao_top = df.groupby('regiao')['receita_total'].sum().idxmax()
-    print(f"Região com maior faturamento: {regiao_top}")
+    valor_top = grupo_regiao.max()
+    print(f"Região com maior faturamento: {regiao_top} (R$ {valor_top:,.2f})")
+
+    # criando uma tabela dinâmica para analisar a receita de região por categoria
+    print("\n--- Tabela Dinâmica (Receita: Região x Categoria) ---")
+    
+    tabela_dinamica = df.pivot_table(
+        values='receita_total', 
+        index='regiao', 
+        columns='categoria', 
+        aggfunc='sum',
+        fill_value=0
+    )
+   
+    tabela_formatada = tabela_dinamica.applymap(
+        lambda x: f"R$ {x:,.2f}".replace(",", "v").replace(".", ",").replace("v", ".")
+    )
+    
+    print(tabela_formatada)
 
